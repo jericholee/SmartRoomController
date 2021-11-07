@@ -31,22 +31,20 @@ void setup() {
 
 
 void loop() { 
-
   pirState = digitalRead(LED);
   if(pirState != pirPrevState) {
     if(pirState == HIGH) { // PIR is Active
       digitalWrite(LED, HIGH);
-    }
-  else { //PIR is not active
-    digitalWrite(LED, LOW);
-    pirActivated++;
-    Serial.println(pirActivated); //Prints the count of people when sensor has motion
+}
+ else { //PIR is not active
+   digitalWrite(LED, LOW);
+   pirActivated++;
+   Serial.println(pirActivated); //Prints the count of people when sensor has motion
   }
   delay(50);
  }
  pirPrevState = pirState;
-}
-
+ 
   if(digitalRead(PIR) == HIGH) {
     digitalWrite(LED, HIGH);
     Serial.println("!Motion In!");
