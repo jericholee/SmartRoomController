@@ -7,6 +7,15 @@
 #include <Adafruit_NeoPixel.h>
 #include <colors.h>
 
+#include <SPI.h>
+#include <Ethernet.h>
+#include <mac.h>
+#include <hue.h>
+#include <wemo.h>
+
+
+EthernetClient Client;
+
 Adafruit_BME280 bme;
 
 const int hexAddress = 0x76;
@@ -40,8 +49,16 @@ void setup() {
   Serial.begin(9600);
   pinMode(ButtonCounter, INPUT);
   pinMode(PIR_IN, INPUT); 
+  pinMode(10, OUTPUT);
+  digitalWrite(10, HIGH);
+  pinMode(4, OUTPUT);
+  digitalWrite(4, HIGH);
   pixel.begin();
   pixel.show();
+
+  Ethernet.begin(mac);          
+  printIP();
+  Serial.printf("LinkStatus: %i  \n",Ethernet.linkStatus());
   
   bmeStatus = bme.begin(hexAddress);
    if (bmeStatus == false) {
@@ -51,11 +68,19 @@ void setup() {
   Serial.println(F("SSD1306 allocation failed"));
   for(;;); // Don't proceed, loop forever
   }
+  Serial.print("My IP address: ");
+  for (thisbyte = 0; thisbyte < 3; thisbyte++) {
+    //print value of each byte of the IP address
+    Serial.printf("%i.",Ethernet.localIP()[thisbyte]);
+    }
+  Serial.printf("%i\n",Ethernet.localIP()[thisbyte]);
 }
 
-
 void loop() {
-
+  tempC = bme.readTemperature();
+  tempf = (tempC * 9.0/5.0) + 32.0;
+  humidRH = bme.readHumidity();
+  
   buttonState = digitalRead(ButtonCounter);
   if(buttonState) {
     Serial.println("Button is pressed");
@@ -63,13 +88,9 @@ void loop() {
   else {
     Serial.println("Button is not pressed");
   }
-
   if(buttonState = digitalRead(ButtonCounter)) {
     pirCount++;
   }
-  tempC = bme.readTemperature();
-  tempf = (tempC * 9.0/5.0) + 32.0;
-  humidRH = bme.readHumidity();
   pirState = digitalRead(PIR_IN);
    if(pirState != lastPirState) {
      if(pirState == HIGH) {
@@ -86,18 +107,58 @@ void loop() {
     display.printf("Person In Count %i\n", pirCount);
     display.printf("Temp: %.2f\n",tempf);
     display.printf("Hum: %.2f\n",humidRH);
-    delay(500);
-    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
-    display.setTextSize(2);  // Draw 2X-scale text
-    display.setTextColor(SSD1306_WHITE);
     display.display();
+    
      for(p = 0;p < PIXELCOUNT;p++) {
-     pixel.setPixelColor(p,200,0,100);
+     pixel.setPixelColor(p,0,255,0);
      pixel.setBrightness(255);
      pixel.show();
      delay(100);
      pixel.clear();
      pixel.show();
       }
+      if(pirCount <=3) {
+        pixel.setPixelColor(p, 0,255,0);
+        pixel.setBrightness(255);
+        pixel.show();
+        delay(100);
+        pixel.clear();
+        pixel.show();
+        setHue(5,true,HueGreen,255,255);
+        
+      if((pirCount >3) && (pirCount <=6))
+        pixel.setPixelColor(p, 0, 0, 255);
+        pixel.setBrightness(255);
+        pixel.show();
+        delay(100);
+        pixel.clear();
+        pixel.show();
+        setHue(5,true,HueBlue,255,255);
+        
+      if((pirCount >6) && (pirCount <=9))
+        pixel.setPixelColor(p, 255, 255 ,0);
+        pixel.setBrightness(255);
+        pixel.show();
+        delay(100);
+        pixel.clear();
+        pixel.show();
+        setHue(5,true,HueYellow,255,255);
+      if((pirCount >9) && (pirCount <=12))
+        pixel.setPixelColor(p, 255, 0 ,0);
+        pixel.setBrightness(255);
+        pixel.show();
+        delay(100);
+        pixel.clear();
+        pixel.show();
+        setHue(5,true,HueRed,255,255);
+        
      }
- 
+}
+
+void printIP() {
+  Serial.printf("My IP address: ");
+  for (byte thisByte = 0; thisByte < 3; thisByte++) {
+    Serial.printf("%i.",Ethernet.localIP()[thisByte]);
+  }
+  Serial.printf("%i\n",Ethernet.localIP()[3]);
+}
