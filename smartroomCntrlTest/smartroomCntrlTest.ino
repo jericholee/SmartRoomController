@@ -11,7 +11,7 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
-const int PIR = 15; //pin the 1st PIR is connected inbound traffic
+const int PIR = 20; //pin the 1st PIR is connected inbound traffic
 const int LED = 13; //LED
 int pirActivated = 0;
 int pirState = 0; // current state of PIR sensor
@@ -41,7 +41,7 @@ void loop() {
    pirActivated++;
    Serial.println(pirActivated); //Prints the count of people when sensor has motion
   }
-  delay(50);
+  delay(500);
  }
  pirPrevState = pirState;
  
@@ -54,6 +54,7 @@ void loop() {
     display.setCursor(0,0);
     display.setRotation(0);
     display.println(F("!IN!"));
+    delay(1000);
     display.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
     display.setTextSize(2);             // Draw 2X-scale text
     display.setTextColor(SSD1306_WHITE);
@@ -61,13 +62,14 @@ void loop() {
   }
   else {
     digitalWrite(LED, LOW);
-    Serial.println(".:Presence Gone:.");
+    Serial.println(".:No Motion:.");
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0,0);
     display.setRotation(0);
-    display.println(F(".:Presence Gone(OUT):."));
+    display.println(F(".:NO MOTION:."));
+    delay(1000);
     display.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
     display.setTextSize(2);             // Draw 2X-scale text
     display.setTextColor(SSD1306_WHITE);

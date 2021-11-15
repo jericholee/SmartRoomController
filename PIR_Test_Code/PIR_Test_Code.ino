@@ -30,7 +30,7 @@ void setup() {
 void loop() {
   if(digitalRead(PIR) == HIGH) {
     digitalWrite(LED, HIGH);
-//    Serial.println("!Presence Detected!");
+    Serial.println("!Presence Detected!");
     delay(100);
     display.clearDisplay();
     display.setTextSize(1);
@@ -46,7 +46,7 @@ void loop() {
   }
   else {
     digitalWrite(LED, LOW);
-//    Serial.println(".:Presence faded:.");
+    Serial.println(".:Presence faded:.");
     delay(100);
     display.clearDisplay();
     display.setTextSize(1);
